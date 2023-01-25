@@ -31,14 +31,19 @@ def dispatch_workflow(req: WorkflowDispatchRequest):
 
     client = GitHubClient(config.github_token)
 
-    if "ref" not in req:
+    if "ref" in req:
+        ref = req["ref"]
+    else:
         repo = client.get_repo(req["owner"], req["repo"])
-        req["ref"] = repo["default_branch"]
-    if "inputs" not in req:
-        req["inputs"] = {}
+        ref = repo["default_branch"]
+
+    if "inputs" in req:
+        inputs = req["inputs"]
+    else:
+        inputs = None
 
     client.dispatch_workflow(
         req["owner"],
         req["repo"],
         req["workflow"],
-        common.DispatchWorkflowRequest(req["ref"], req["inputs"]))
+        common.DispatchWorkflowRequest(ref, inputs))
