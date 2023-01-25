@@ -40,7 +40,7 @@ def dispatch_workflow(req: WorkflowDispatchRequest):
     if "inputs" in req:
         inputs = req["inputs"]
     else:
-        inputs = None
+        inputs = {}
 
     client.dispatch_workflow(
         req["owner"],
