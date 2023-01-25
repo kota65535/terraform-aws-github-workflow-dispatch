@@ -1,0 +1,62 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - README.md
+  pull_request:
+
+
+jobs:
+  show-context:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show github context object
+        run: echo $JSON
+        env:
+          JSON: ${{ toJSON(github) }}
+  
+  terraform-apply:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./.github/workflows
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup terraform
+        uses: ./.github/actions/setup-terraform
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: Prepare secret.auto.tfvars
+        run: |
+          cat <<-EOF > secret.auto.tfvars
+            github_token             = "${{ secrets.PERSONAL_TOKEN }}"
+          EOF
+      - name: Run terraform init
+        run: terraform init
+      - name: Run terraform apply
+        run: terraform apply -auto-approve
+
+  invoke:
+    runs-on: ubuntu-latest
+    needs:
+      - terraform-apply
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-1
+      - name: Invoke lambda
+        run: aws lambda invoke
+          --function-name github-workflow-dispatch 
+          --payload $(base64 <<< '{"owner":"kota65535","repo":"terraform-aws-github-workflow-dispatch","workflow":"do-something.yml","inputs":{"foo":"1","bar":"2"}}')
+          out.json
