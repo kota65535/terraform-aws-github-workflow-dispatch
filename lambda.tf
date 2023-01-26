@@ -9,13 +9,13 @@ resource "aws_lambda_function" "main" {
 
   environment {
     variables = {
-      GITHUB_TOKEN             = var.github_token
+      GITHUB_TOKEN = var.github_token
     }
   }
 }
 
-resource "random_string" main {
-  length = 8
+resource "random_string" "main" {
+  length  = 8
   special = false
 }
 
