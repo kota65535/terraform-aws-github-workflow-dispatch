@@ -6,3 +6,7 @@ terraform {
     }
   }
 }
+
+provider "temporary" {
+  base = local.terraform_tmp_dir
+}
