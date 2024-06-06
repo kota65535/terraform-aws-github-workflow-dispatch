@@ -1,6 +1,6 @@
 import json
 import logging
-from typing import TypedDict
+from typing import TypedDict, NotRequired
 
 import common
 from common import GitHubClient
@@ -17,8 +17,8 @@ class WorkflowDispatchRequest(TypedDict):
     owner: str
     repo: str
     workflow: str
-    ref: str
-    inputs: dict
+    ref: NotRequired[str]
+    inputs: NotRequired[dict]
 
 
 # Lambda function entrypoint
@@ -33,16 +33,21 @@ def lambda_handler(event: WorkflowDispatchRequest, context):
 
 
 def render(req: WorkflowDispatchRequest) -> WorkflowDispatchRequest:
-    inputs = {}
-    for k, v in req["inputs"].items():
-        inputs[k] = Template(v).render()
-    return {
+    out = {
         "repo": Template(req["repo"]).render(),
         "owner": Template(req["owner"]).render(),
-        "ref": Template(req["ref"]).render(),
         "workflow": Template(req["workflow"]).render(),
-        "inputs": inputs
     }
+    if "ref" in req:
+        out["ref"] = Template(req["ref"]).render()
+ 
+    if "inputs" in req:
+        inputs = {}
+        for k, v in req["inputs"].items():
+            inputs[k] = Template(v).render()
+        out["inputs"] = inputs
+
+    return out
 
 
 def dispatch_workflow(req: WorkflowDispatchRequest):
