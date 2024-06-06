@@ -38,7 +38,7 @@ jobs:
             github_token             = "${{ secrets.PERSONAL_TOKEN }}"
           EOF
       - name: Run terraform init
-        run: terraform init
+        run: terraform init -upgrade
       - name: Run terraform apply
         run: terraform apply -auto-approve
 
