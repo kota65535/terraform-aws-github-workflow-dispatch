@@ -20,5 +20,5 @@ provider "aws" {
 module "workflow_dispatch" {
   source = "../../"
 
-  github_token             = var.github_token
+  github_token = var.github_token
 }

@@ -5,7 +5,7 @@ resource "aws_lambda_function" "main" {
   runtime          = "python${local.lambda_python_version}"
   role             = aws_iam_role.lambda.arn
   source_code_hash = data.archive_file.lambda_zip.output_base64sha256
-  layers           = [aws_lambda_layer_version.version.arn]
+  layers           = [module.lambda_layer.lambda_layer_version.arn]
 
   environment {
     variables = {
@@ -35,4 +35,8 @@ data "archive_file" "lambda_zip" {
     content  = file("${local.lambda_dir}/src/common.py")
     filename = "common.py"
   }
+}
+
+data "temporary_directory" "lambda" {
+  name = "lambda/${var.lambda_name}"
 }
