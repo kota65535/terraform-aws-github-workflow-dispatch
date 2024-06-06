@@ -7,10 +7,10 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "4.67.0"
+      version = "5.52.0"
     }
   }
-  required_version = "~> 1.5.0"
+  required_version = "~> 1.8.0"
 }
 
 provider "aws" {
@@ -20,5 +20,5 @@ provider "aws" {
 module "workflow_dispatch" {
   source = "../../"
 
-  github_token             = var.github_token
+  github_token = var.github_token
 }
