@@ -7,6 +7,7 @@ authors = ["Tomohiko Ozawa <kota65535@gmail.com>"]
 [tool.poetry.dependencies]
 python = "~3.11"
 requests = "2.31.0"
+jinja2 = "3.1.4"
 
 
 [build-system]

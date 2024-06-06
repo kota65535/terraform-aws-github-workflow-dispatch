@@ -5,6 +5,7 @@ from typing import TypedDict
 import common
 from common import GitHubClient
 from config import Config
+from jinja2 import Template
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -24,11 +25,27 @@ class WorkflowDispatchRequest(TypedDict):
 def lambda_handler(event: WorkflowDispatchRequest, context):
     logger.info(f"Input: {json.dumps(event)}")
 
+    event = render(event)
+
+    logger.info(f"Rendered: {json.dumps(event)}")
+
     dispatch_workflow(event)
 
 
-def dispatch_workflow(req: WorkflowDispatchRequest):
+def render(req: WorkflowDispatchRequest) -> WorkflowDispatchRequest:
+    inputs = {}
+    for k, v in req["inputs"].items():
+        inputs[k] = Template(v).render()
+    return {
+        "repo": Template(req["repo"]).render(),
+        "owner": Template(req["owner"]).render(),
+        "ref": Template(req["ref"]).render(),
+        "workflow": Template(req["workflow"]).render(),
+        "inputs": inputs
+    }
 
+
+def dispatch_workflow(req: WorkflowDispatchRequest):
     client = GitHubClient(config.github_token)
 
     if "ref" in req:
