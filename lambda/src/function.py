@@ -34,8 +34,8 @@ def lambda_handler(event: WorkflowDispatchRequest, context):
 
 def render(req: WorkflowDispatchRequest) -> WorkflowDispatchRequest:
     out = {
-        "repo": Template(req["repo"]).render(),
         "owner": Template(req["owner"]).render(),
+        "repo": Template(req["repo"]).render(),
         "workflow": Template(req["workflow"]).render(),
     }
     if "ref" in req:

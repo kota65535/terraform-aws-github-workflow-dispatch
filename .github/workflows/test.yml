@@ -70,5 +70,5 @@ jobs:
       - name: Invoke lambda 3
         run: aws lambda invoke
           --function-name github-workflow-dispatch
-          --payload "$(base64 <<< '{"owner":"{{ \"kota65535\" }}","repo":"{{ terraform_aws_github_workflow_dispatch | replace(\"_\", \"-\") }}","workflow":"{{ do_something.yml | replace(\"_\", \"-\") }}","inputs":{"foo":"{{ 1.4 | round }}","bar":"{{ 1.5 | round }}"}}')"
+          --payload "$(base64 <<< '{"owner":"{{ \"kota65535\" }}","repo":"{{ \"terraform_aws_github_workflow_dispatch\" | replace(\"_\", \"-\") }}","workflow":"{{ \"do_something.yml\" | replace(\"_\", \"-\") }}","inputs":{"foo":"{{ 1.4 | round }}","bar":"{{ 1.5 | round }}"}}')"
           out.json
